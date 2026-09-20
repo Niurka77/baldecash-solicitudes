@@ -1,0 +1,36 @@
+// Esquema de base de datos - Módulo de Solicitudes de Financiamiento BaldeCash
+//
+// Motor: SQLite. El enunciado acepta explícitamente PostgreSQL, MySQL o SQLite
+// ("Cualquiera es aceptable"); se eligió SQLite para desarrollo local sin
+// depender de un servidor de base de datos externo ni de Docker: la "base de
+// datos" es un único archivo (dev.db) versionado por las migraciones de Prisma.
+//
+// Nota: SQLite no soporta enums nativos en Prisma, por eso `estado` es String
+// y se valida contra ESTADOS_SOLICITUD (ver estado-solicitud.enum.ts) tanto
+// en los DTOs de entrada como en el mapeo de salida.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Solicitud {
+  id             String   @id @default(uuid())
+  nombre         String
+  dni            String
+  telefono       String
+  correo         String
+  monto          Float
+  plazoMeses     Int
+  cuotaMensual   Float
+  estado         String   @default("pendiente")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([estado])
+  @@map("solicitudes")
+}
